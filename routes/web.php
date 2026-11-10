@@ -1,10 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
-Route::get('/', function () {
-    return view('public.home');
-});
+use App\Http\Controllers\PelangganController;
+use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\ServisController;
 
 Route::get('/', function () {
     return view('public.home');
@@ -13,3 +12,7 @@ Route::get('/', function () {
 Route::get('/admin', function () {
     return view('admin.dashboard');
 });
+
+Route::resource('admin/pelanggan', PelangganController::class);
+Route::resource('admin/produk', ProdukController::class);
+Route::resource('admin/servis', ServisController::class);
