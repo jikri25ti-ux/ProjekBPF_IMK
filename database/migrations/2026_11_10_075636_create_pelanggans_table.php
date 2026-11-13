@@ -14,8 +14,11 @@ return new class extends Migration
         Schema::create('pelanggans', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
-            $table->string('no_hp');
+            $table->string('email')->unique();
+            $table->string('password');
+            $table->string('no_hp')->unique();
             $table->text('alamat');
+            $table->enum('role', ['admin', 'pelanggan'])->default('pelanggan');
             $table->timestamps();
         });
     }

@@ -1,39 +1,109 @@
 @extends('layouts.public')
 
 @section('content')
-    <!-- HERO BANNER -->
+    <style>
+        .category-card {
+            display: block;
+            background: #fff;
+            border-radius: 1rem;
+            padding: 20px 10px;
+            text-align: center;
+            height: 100%;
+            color: var(--ink);
+            box-shadow: var(--shadow-soft);
+            transition: transform .25s ease, box-shadow .25s ease;
+        }
+        .category-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+        .category-card .icon-wrap {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 12px;
+            border-radius: 50%;
+            background: var(--brand-soft);
+            color: var(--brand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: background-color .25s ease, color .25s ease;
+        }
+        .category-card:hover .icon-wrap { background: var(--brand); color: #fff; }
+        .category-card p { font-size: 13px; font-weight: 600; margin: 0; }
+
+        .product-card {
+            background: #fff;
+            border-radius: 1rem;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-soft);
+            transition: transform .25s ease, box-shadow .25s ease;
+        }
+        .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
+        .product-card .thumb { aspect-ratio: 4 / 3; overflow: hidden; background: #eceef3; }
+        .product-card .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s ease; }
+        .product-card:hover .thumb img { transform: scale(1.05); }
+        .product-info { padding: 14px; display: flex; flex-direction: column; flex: 1; }
+        .product-name {
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.4;
+            min-height: 2.8em;
+            margin-bottom: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .product-meta { font-size: 12px; color: var(--muted); margin-top: 8px; }
+        .btn-wa {
+            margin-top: auto;
+            background: #e8f8ee;
+            color: #16a34a;
+            border: none;
+            border-radius: 50rem;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 8px 12px;
+            transition: background-color .2s ease, color .2s ease;
+        }
+        .btn-wa:hover { background: #16a34a; color: #fff; }
+        .product-actions { margin-top: 14px; display: flex; }
+
+        @media (max-width: 767.98px) {
+            .product-info { padding: 12px; }
+            .btn-wa { font-size: 12px; }
+        }
+    </style>
+
     <section class="hero mb-4">
         <div>
-            <span class="badge bg-light text-danger mb-3">LAYANAN TERBAIK</span>
-            <h1>Solusi Servis &<br>Kebutuhan Elektronik!</h1>
-            <p>Percayakan perbaikan TV dan elektronik Anda pada teknisi ahli kami.</p>
-            <a href="#produk" class="btn btn-light text-danger fw-bold px-4">
-                Lihat Katalog
-            </a>
+            <span class="badge rounded-pill bg-light text-danger mb-3">LAYANAN TERBAIK</span>
+            <h1>Solusi Servis &<br>Kebutuhan Elektronik</h1>
+            <p class="mb-4">Percayakan perbaikan TV dan elektronik Anda pada teknisi ahli kami.</p>
+            <a href="#produk" class="btn btn-hero">Lihat Katalog</a>
         </div>
-        <img src="https://images.unsplash.com/photo-1607082349566-187342175e2f?w=500" alt="Shopping">
+        <img src="https://www.oscarliving.co.id/cdn/shop/files/kipas-angin-kipas-angin-cosmos-industrial-desk-fan-9pda-cosmos-shopname-4939856.jpg?v=1763018459" alt="Elektronik">
     </section>
 
-    <!-- CATEGORIES -->
     <section class="mb-5">
-        <h5 class="section-title">Kategori Layanan & Produk</h5>
-        <div class="row row-cols-3 row-cols-md-6 g-3">
+        <h5 class="section-title">Kategori Produk</h5>
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-lg-5 g-3">
             @php
-                // Diubah agar relevan dengan Sony Prima Jaya
                 $categories = [
                     ['Televisi', 'fa-tv'],
-                    ['Sparepart', 'fa-microchip'],
+                    ['Mesin Cuci', 'fa-soap'],
                     ['Kipas Angin', 'fa-fan'],
                     ['Speaker', 'fa-volume-up'],
-                    ['Kabel & Adaptor', 'fa-plug'],
-                    ['Servis Panggilan', 'fa-tools']
+                    ['Kabel & Adaptor', 'fa-plug']
                 ];
             @endphp
 
             @foreach($categories as $category)
                 <div class="col">
                     <div class="category-card">
-                        <i class="fa {{ $category[1] }}"></i>
+                        <div class="icon-wrap"><i class="fa {{ $category[1] }}"></i></div>
                         <p>{{ $category[0] }}</p>
                     </div>
                 </div>
@@ -41,38 +111,7 @@
         </div>
     </section>
 
-    <!-- FLASH SALE (Opsional - Jika mau dipertahankan) -->
-    <section class="sale-section mb-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h5 class="sale-heading mb-0">
-                <i class="fa fa-bolt"></i> SPESIAL HARI INI
-            </h5>
-            <span class="text-secondary small">
-                Berakhir dalam <strong id="timer">02:00:00</strong>
-            </span>
-        </div>
-        <div class="row row-cols-2 row-cols-md-4 g-3">
-            @foreach([
-                ['Bracket TV Universal','95000','150000','36','https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400'],
-                ['Kabel HDMI 5 Meter','45000','75000','40','https://images.unsplash.com/photo-1538356111053-748a48e1acb8?w=400'],
-            ] as $product)
-                <div class="col">
-                    <div class="product-card">
-                        <img src="{{ $product[4] }}" alt="{{ $product[0] }}">
-                        <div class="product-info">
-                            <div class="product-name">{{ $product[0] }}</div>
-                            <div class="price">Rp{{ number_format($product[1],0,',','.') }}</div>
-                            <span class="old-price">Rp{{ number_format($product[2],0,',','.') }}</span>
-                            <span class="badge-sale">{{ $product[3] }}% OFF</span>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    </section>
-
-    <!-- ALL PRODUCTS -->
-    <section id="produk" class="mb-5">
+    <section id="produk">
         <h5 class="section-title">Katalog Produk Tersedia</h5>
 
         @php
@@ -90,26 +129,29 @@
             }
         @endphp
 
-        <div class="row row-cols-2 row-cols-md-4 g-3">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
             @forelse($products as $product)
                 <div class="col">
                     <div class="product-card">
-                        <img src="{{ $product[5] }}" alt="{{ $product[0] }}">
+                        <div class="thumb">
+                            <img src="{{ $product[5] }}" alt="{{ $product[0] }}" loading="lazy">
+                        </div>
                         <div class="product-info">
                             <div class="product-name">{{ $product[0] }}</div>
                             <div class="price">Rp{{ number_format($product[1],0,',','.') }}</div>
                             <div class="product-meta">
-                                <span class="text-success"><i class="fa fa-check-circle"></i> Stok: {{ $product[3] }}</span>
-                                <br>
-                                <i class="fa fa-store"></i> {{ $product[4] }}
+                                <div class="text-success"><i class="fa fa-check-circle"></i> Stok: {{ $product[3] }}</div>
+                                <div><i class="fa fa-store"></i> {{ $product[4] }}</div>
                             </div>
 
-                            <!-- Tombol Diubah Menuju WhatsApp -->
-                            <a href="https://wa.me/6281234567890?text=Halo%20Toko%20Sony%20Prima%20Jaya,%20apakah%20produk%20*{{ urlencode($product[0]) }}*%20ini%20masih%20ada?"
-                               target="_blank"
-                               class="btn btn-sm btn-outline-success w-100 mt-3">
-                                <i class="fab fa-whatsapp"></i> Tanya via WA
-                            </a>
+                            <div class="product-actions">
+                                <a href="https://wa.me/6281234567890?text=Halo%20Toko%20Sony%20Prima%20Jaya,%20apakah%20produk%20*{{ urlencode($product[0]) }}*%20ini%20masih%20ada?"
+                                   target="_blank"
+                                   rel="noopener"
+                                   class="btn btn-wa w-100">
+                                    <i class="fab fa-whatsapp"></i> Tanya via WA
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
