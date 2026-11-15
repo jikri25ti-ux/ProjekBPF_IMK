@@ -19,7 +19,8 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="nama" class="form-label">Nama Lengkap</label>
-                                <input type="text" id="nama" name="nama" class="form-control @error('nama') is-invalid @enderror" value="{{ old('nama') }}">
+                                <input type="text" id="nama" name="nama" class="form-control @error('nama') is-invalid @enderror"
+                                value="{{ old('nama') }}">
                                 @error('nama')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

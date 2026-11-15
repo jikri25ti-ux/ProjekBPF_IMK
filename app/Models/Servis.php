@@ -18,3 +18,4 @@ class Servis extends Model
         'biaya',
     ];
 }
+

@@ -28,3 +28,5 @@ class Pelanggan extends Authenticatable
         ];
     }
 }
+
+

@@ -48,37 +48,6 @@
     }
 </style>
 
-@php
-    $servis = [
-        'kode'           => 'SRV-2026-0012',
-        'nama_pelanggan' => 'Budi Santoso',
-        'no_hp'          => '0812-xxxx-4567',
-        'nama_barang'    => 'TV LED Sony Bravia 43"',
-        'kerusakan'      => 'Layar bergaris dan suara kadang hilang.',
-        'status'         => 'Sedang Dikerjakan',
-        'biaya'          => 350000,
-        'tanggal_masuk'  => '05 Nov 2026',
-        'estimasi'       => '12 Nov 2026',
-    ];
-
-    $steps = [
-        ['label' => 'Menunggu',          'icon' => 'fa-clock'],
-        ['label' => 'Sedang Dikerjakan', 'icon' => 'fa-tools'],
-        ['label' => 'Selesai',           'icon' => 'fa-check'],
-        ['label' => 'Diambil',           'icon' => 'fa-hand-holding'],
-    ];
-
-    $statusClass = [
-        'Menunggu'          => 'status-menunggu',
-        'Sedang Dikerjakan' => 'status-dikerjakan',
-        'Selesai'           => 'status-selesai',
-        'Diambil'           => 'status-diambil',
-    ];
-
-    $currentIndex = array_search($servis['status'], array_column($steps, 'label'));
-    $progressWidth = $currentIndex * 25;
-@endphp
-
 <section class="hero mb-4">
     <div>
         <h1>Cek Status Servis</h1>
@@ -91,18 +60,18 @@
     <div class="col-lg-4">
         <div class="servis-card mb-4">
             <h5 class="section-title mb-3"><i class="fa fa-search text-danger me-2"></i>Lacak Servis</h5>
-            <form action="" method="GET" class="servis-form">
+            <form action="{{ route('cek-servis') }}" method="GET" class="servis-form">
                 <div class="mb-3">
                     <label for="kode" class="form-label small fw-bold">Kode Servis</label>
                     <input type="text" id="kode" name="kode" class="form-control"
-                        placeholder="Contoh: SRV-2026-0012"
-                        value="{{ request('kode') }}">
+                        placeholder="Contoh: SRV-14112026-1"
+                        value="{{ request('kode') }}" required>
                 </div>
                 <div class="mb-3">
                     <label for="no_hp" class="form-label small fw-bold">Nomor HP</label>
                     <input type="text" id="no_hp" name="no_hp" class="form-control"
                         placeholder="Contoh: 0812xxxxxxxx"
-                        value="{{ request('no_hp') }}">
+                        value="{{ request('no_hp') }}" required>
                 </div>
                 <button type="submit" class="btn btn-orange w-100">
                     <i class="fa fa-search me-1"></i> Cek Status
@@ -119,76 +88,118 @@
     </div>
 
     <div class="col-lg-8">
-        <div class="servis-card">
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-                <div>
-                    <div class="info-label">Kode Servis</div>
-                    <h4 class="fw-bold mb-0 kode-servis">{{ $servis['kode'] }}</h4>
-                </div>
-                <span class="status-badge {{ $statusClass[$servis['status']] }}">
-                    <i class="fa fa-circle me-1" style="font-size: 8px;"></i>{{ $servis['status'] }}
-                </span>
-            </div>
+        @if ($servis)
+            @php
+                $steps = [
+                    ['label' => 'Menunggu',          'icon' => 'fa-clock'],
+                    ['label' => 'Sedang Dikerjakan', 'icon' => 'fa-tools'],
+                    ['label' => 'Selesai',           'icon' => 'fa-check'],
+                    ['label' => 'Diambil',           'icon' => 'fa-hand-holding'],
+                ];
 
-            <div class="tracker">
-                <div class="progress-line" style="width: {{ $progressWidth }}%;"></div>
-                @foreach ($steps as $i => $step)
-                    <div class="tracker-step {{ $i <= $currentIndex ? 'active' : '' }}">
-                        <div class="circle"><i class="fa {{ $step['icon'] }}"></i></div>
-                        <p>{{ $step['label'] }}</p>
+                $statusClass = [
+                    'Menunggu'          => 'status-menunggu',
+                    'Sedang Dikerjakan' => 'status-dikerjakan',
+                    'Selesai'           => 'status-selesai',
+                    'Diambil'           => 'status-diambil',
+                ];
+
+                $statusNote = [
+                    'Menunggu'          => 'Perangkat Anda telah terdaftar dalam antrean dan menunggu pemeriksaan teknisi.',
+                    'Sedang Dikerjakan' => 'Perangkat Anda sedang dalam proses perbaikan oleh teknisi kami.',
+                    'Selesai'           => 'Perbaikan telah selesai! Silakan ambil perangkat Anda di toko pada jam operasional.',
+                    'Diambil'           => 'Perangkat telah diserahkan dan diterima kembali oleh pemilik.',
+                ];
+
+                $currentIndex = array_search($servis->status, array_column($steps, 'label'));
+                $progressWidth = $currentIndex !== false ? ($currentIndex * 25) : 0;
+            @endphp
+
+            <div class="servis-card">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                    <div>
+                        <div class="info-label">Kode Servis</div>
+                        <h4 class="fw-bold mb-0 kode-servis">{{ $servis->kode_servis }}</h4>
                     </div>
-                @endforeach
-            </div>
+                    <span class="status-badge {{ $statusClass[$servis->status] ?? 'status-menunggu' }}">
+                        <i class="fa fa-circle me-1" style="font-size: 8px;"></i>{{ $servis->status }}
+                    </span>
+                </div>
 
-            <hr class="my-4">
+                <div class="tracker">
+                    <div class="progress-line" style="width: {{ $progressWidth }}%;"></div>
+                    @foreach ($steps as $i => $step)
+                        <div class="tracker-step {{ $i <= $currentIndex ? 'active' : '' }}">
+                            <div class="circle"><i class="fa {{ $step['icon'] }}"></i></div>
+                            <p>{{ $step['label'] }}</p>
+                        </div>
+                    @endforeach
+                </div>
 
-            <div class="row g-3">
-                <div class="col-sm-6">
-                    <div class="info-label">Nama Pelanggan</div>
-                    <div class="info-value">{{ $servis['nama_pelanggan'] }}</div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="info-label">Nomor HP</div>
-                    <div class="info-value">{{ $servis['no_hp'] }}</div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="info-label">Nama Barang</div>
-                    <div class="info-value">{{ $servis['nama_barang'] }}</div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="info-label">Estimasi Biaya</div>
-                    <div class="info-value price">
-                        {{ $servis['biaya'] ? 'Rp ' . number_format($servis['biaya'], 0, ',', '.') : 'Belum ditentukan' }}
+                <hr class="my-4">
+
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div class="info-label">Nama Pelanggan</div>
+                        <div class="info-value">{{ $servis->nama_pelanggan }}</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="info-label">Nomor HP</div>
+                        <div class="info-value">{{ $servis->no_hp }}</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="info-label">Nama Barang</div>
+                        <div class="info-value">{{ $servis->nama_barang }}</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="info-label">Estimasi / Total Biaya</div>
+                        <div class="info-value price">
+                            {{ $servis->biaya ? 'Rp ' . number_format($servis->biaya, 0, ',', '.') : 'Belum ditentukan' }}
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="info-label">Tanggal Masuk</div>
+                        <div class="info-value"><i class="fa fa-calendar-alt text-muted me-1"></i>{{ $servis->created_at->format('d M Y') }}</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="info-label">Pembaruan Terakhir</div>
+                        <div class="info-value"><i class="fa fa-clock text-muted me-1"></i>{{ $servis->updated_at->format('d M Y, H:i') }}</div>
+                    </div>
+                    <div class="col-12">
+                        <div class="info-label">Keluhan / Kerusakan</div>
+                        <div class="keluhan-box p-3 rounded-3">{{ $servis->kerusakan }}</div>
                     </div>
                 </div>
-                <div class="col-sm-6">
-                    <div class="info-label">Tanggal Masuk</div>
-                    <div class="info-value"><i class="fa fa-calendar-alt text-muted me-1"></i>{{ $servis['tanggal_masuk'] }}</div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="info-label">Estimasi Selesai</div>
-                    <div class="info-value"><i class="fa fa-calendar-check text-muted me-1"></i>{{ $servis['estimasi'] }}</div>
-                </div>
-                <div class="col-12">
-                    <div class="info-label">Keluhan / Kerusakan</div>
-                    <div class="keluhan-box p-3 rounded-3">{{ $servis['kerusakan'] }}</div>
-                </div>
-            </div>
 
-            <div class="note-box d-flex align-items-start p-3 mt-4">
-                <i class="fa fa-info-circle me-2 mt-1"></i>
-                <span class="small">Perangkat Anda sedang dalam proses perbaikan oleh teknisi kami. Kami akan menghubungi Anda jika servis telah selesai.</span>
-            </div>
+                <div class="note-box d-flex align-items-start p-3 mt-4">
+                    <i class="fa fa-info-circle me-2 mt-1"></i>
+                    <span class="small">{{ $statusNote[$servis->status] ?? '' }}</span>
+                </div>
 
-            <div class="d-flex flex-wrap gap-2 mt-4">
-                <a href="#" class="btn btn-outline-orange">
-                    <i class="fab fa-whatsapp me-1"></i> Hubungi Teknisi
-                </a>
-                <a href="/" class="btn btn-back">
-                    <i class="fa fa-arrow-left me-1"></i> Kembali ke Beranda
-                </a>
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    <a href="https://wa.me/6281234567890?text=Halo%20Toko%20Sony%20Prima%20Jaya,%20saya%20ingin%20menanyakan%20perkembangan%20servis%20dengan%20kode%20*{{ urlencode($servis->kode_servis) }}*."
+                       target="_blank" rel="noopener" class="btn btn-outline-orange">
+                        <i class="fab fa-whatsapp me-1"></i> Hubungi Teknisi
+                    </a>
+                    <a href="{{ route('home') }}" class="btn btn-back">
+                        <i class="fa fa-arrow-left me-1"></i> Kembali ke Beranda
+                    </a>
+                </div>
             </div>
-        </div>
+        @elseif ($searched)
+            <div class="servis-card text-center py-5">
+                <i class="fa fa-search-minus text-danger mb-3" style="font-size: 48px;"></i>
+                <h5 class="fw-bold">Data Servis Tidak Ditemukan</h5>
+                <p class="text-muted small mb-4">Pastikan Kode Servis dan Nomor HP yang Anda masukkan sudah sesuai dengan nota tanda terima.</p>
+                <a href="{{ route('cek-servis') }}" class="btn btn-outline-orange">Reset Pencarian</a>
+            </div>
+        @else
+            <div class="servis-card text-center py-5">
+                <i class="fa fa-clipboard-list text-muted mb-3" style="font-size: 48px; opacity: .5;"></i>
+                <h5 class="fw-bold">Masukkan Kode Servis & Nomor HP</h5>
+                <p class="text-muted small mb-0">Gunakan formulir di samping untuk melihat progres pengerjaan perangkat elektronik Anda.</p>
+            </div>
+        @endif
     </div>
 </div>
 
